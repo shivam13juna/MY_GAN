@@ -1,0 +1,6 @@
+Q. Why normal GANS are insufficient, and how do you overcome that inability?
+A. GANs learn "incomplete" representation BECAUSE of single-pathway framework,
+what they've done is create a second reconstruction path, "generation sideway"
+for maintaining the completeness of the learned embedding space. Proposition
+is that these TWO learning pathways compete in a parameter-sharing manner.
+Clearly, for some reason, this ain't working.
