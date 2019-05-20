@@ -172,7 +172,7 @@ class ImageList(data.Dataset):
         if img1_fpath.find('multi_PIE') > -1:
             view2, img2, view3, img3 = get_multiPIE_img(img1_fpath)
         else:
-            view2, img2, view2, img3 = get_300w_LP_img(img1_fpath)
+            view2, img2, view3, img3 = get_300w_LP_img(img1_fpath)
 
         if self.transform_img is not None:
             img1 = self.transform_img(img1) # [0,1], c x h x w
