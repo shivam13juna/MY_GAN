@@ -27,6 +27,7 @@ def read_img(img_path):
     img = img.resize((128,128), Image.ANTIALIAS)
     return img
 
+
 def get_multiPIE_img(img_path):
 
     # img_path: /home/yt219/data/multi_PIE_crop_128/192/192_01_02_140_07_crop_128.png
@@ -46,7 +47,25 @@ def get_multiPIE_img(img_path):
     img2_path = 'data/multi_PIE_crop_128/' + ID + '/' + ID + '_01_' + status + '_' + view + '_' + bright + '_crop_128.png'
     img2 = read_img( img2_path )
     img2 = img2.resize((128,128), Image.ANTIALIAS)
-    return view2, img2
+
+    tmp = random.randint(0, 8)
+    view3 = tmp
+
+    view = views[tmp]
+
+    token = img_path.split('/')
+    name = token[-1]
+        
+    token = name.split('_')
+    ID = token[0]
+    status = token[2]
+    bright = token[4]
+        
+    img3_path = 'data/multi_PIE_crop_128/' + ID + '/' + ID + '_01_' + status + '_' + view + '_' + bright + '_crop_128.png'
+    img3 = read_img( img3_path )
+    img3 = img3.resize((128,128), Image.ANTIALIAS)
+
+    return view2, img2, view3, img3
 
 def get_300w_LP_img(img_path):
     # img_path = '/home/yt219/data/crop_0822/AFW_resize/AFW_1051618982_1_0_128.jpg'
@@ -90,8 +109,43 @@ def get_300w_LP_img(img_path):
     new_img = img_path[:left+1] + str(tmp) + '_128.jpg'
     img2 = read_img( new_img )
     img2 = img2.resize((128,128), Image.ANTIALIAS)
+
+    view3 = -1
+    while(view3 < 0):
+        tmp = random.randint(0, 17)
+        new_txt = img_path[:left+1] + str(tmp) + '_128_pose_shape_expression_128.txt'
+        new_txt = new_txt.replace("crop_0907", "300w_LP_size_128")
+        
+        if os.path.isfile(new_txt):
+            param = np.loadtxt(new_txt)
+            yaw = param[1]
+            if yaw < -d_60 or yaw > d_60:
+                view3 = -1
+            elif yaw >= -d_60 and yaw < -d_60+d_range:
+                view3 = 0
+            elif yaw >= -d_45-d_range and yaw < -d_45+d_range:
+                view3 = 1
+            elif yaw >= -d_30-d_range and yaw < -d_30+d_range:
+                view3 = 2
+            elif yaw >= -d_15-d_range and yaw < -d_15+d_range:
+                view3 = 3
+            elif yaw >= -d_range and yaw < d_range:
+                view3 = 4
+            elif yaw >= d_15-d_range and yaw < d_15+d_range:
+                view3 = 5
+            elif yaw >= d_30-d_range and yaw < d_30+d_range:
+                view3 = 6
+            elif yaw >= d_45-d_range and yaw < d_45+d_range:
+                view3 = 7
+            elif yaw >= d_60-d_range and yaw <= d_60:
+                view3 = 8
     
-    return view2, img2
+    new_img = img_path[:left+1] + str(tmp) + '_128.jpg'
+    img3 = read_img( new_img )
+    img3 = img3.resize((128,128), Image.ANTIALIAS)
+    
+    return view2, img2, view3, img3
+
 
 class ImageList(data.Dataset):
     def __init__( self, list_file, transform=None, is_train=True, 
@@ -116,15 +170,17 @@ class ImageList(data.Dataset):
         img1 = read_img( img1_fpath )
 
         if img1_fpath.find('multi_PIE') > -1:
-            view2, img2 = get_multiPIE_img(img1_fpath)
+            view2, img2, view3, img3 = get_multiPIE_img(img1_fpath)
         else:
-            view2, img2 = get_300w_LP_img(img1_fpath)
+            view2, img2, view2, img3 = get_300w_LP_img(img1_fpath)
 
         if self.transform_img is not None:
             img1 = self.transform_img(img1) # [0,1], c x h x w
             img2 = self.transform_img(img2)
+            img3 = self.transform_img(img3)
 
-        return view1, view2, img1, img2
+
+        return view1, view2, view3, img1, img2, img3
 
     def __len__(self):
         return len(self.img_list)

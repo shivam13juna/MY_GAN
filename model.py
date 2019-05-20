@@ -89,9 +89,37 @@ class residualBlock_up(nn.Module):
         return shortcut + out
 
 
-class _G_xvz(nn.Module):# This is the encoder part, used in reconstruction. 
+class _G_xvz1(nn.Module):# This is the encoder part, used in reconstruction. 
     def __init__(self):
-        super(_G_xvz, self).__init__()
+        super(_G_xvz1, self).__init__()
+        #self.conv = nn.Conv2d(3, 64, 3, 1, 1) 64*64 resolution implementation
+        self.conv = nn.Conv2d(3, 64, 3, 1, 1) # 3*128*128 --> 64*128*128
+        self.resBlock0 = residualBlock_down(64, 64) # 64*128*128 --> 64*64*64
+        self.resBlock1 = residualBlock_down(64, 128)
+        self.resBlock2 = residualBlock_down(128, 256)
+        self.resBlock3 = residualBlock_down(256, 512)
+        self.resBlock4 = residualBlock_down(512, 512)
+        self.fc_v = nn.Linear(512*4*4, v_siz)
+        self.fc_z = nn.Linear(512*4*4, z_siz)
+        self.softmax = nn.Softmax()
+    
+    def forward(self, x):
+        out = self.conv(x)
+        out = self.resBlock0(out)
+        out = self.resBlock1(out)
+        out = self.resBlock2(out)
+        out = self.resBlock3(out)
+        out = self.resBlock4(out)
+        out = out.view(-1, 512*4*4)
+        v = self.fc_v(out)
+        v = self.softmax(v)
+        z = self.fc_z(out)
+
+        return v, z
+
+class _G_xvz2(nn.Module):# This is the encoder part, used in reconstruction. 
+    def __init__(self):
+        super(_G_xvz2, self).__init__()
         #self.conv = nn.Conv2d(3, 64, 3, 1, 1) 64*64 resolution implementation
         self.conv = nn.Conv2d(3, 64, 3, 1, 1) # 3*128*128 --> 64*128*128
         self.resBlock0 = residualBlock_down(64, 64) # 64*128*128 --> 64*64*64
