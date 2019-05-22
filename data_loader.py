@@ -163,11 +163,15 @@ class ImageList(data.Dataset):
         # img_name: /home/yt219/data/multi_PIE_crop_128/192/192_01_02_140_07_crop_128.png
         img1_path = self.img_list[index]
         token = img1_path.split(' ')
+
         
         img1_fpath = token[0]
         view1 = int(token[1])
         
         img1 = read_img( img1_fpath )
+        print(img1_path)
+        print(img1_fpath)
+        print(view1)
 
         if img1_fpath.find('multi_PIE') > -1:
             view2, img2, view3, img3 = get_multiPIE_img(img1_fpath)
