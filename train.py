@@ -1,9 +1,15 @@
 import time
 import argparse
 import os
+os.system('nvcc --version')
+CUDA_LAUNCH_BLOCKING=1
 import random
 import numpy as np
+
 import torch
+print(torch.version.cuda)
+torch.backends.cudnn.benchmark = False
+# torch.backends.cudnn.benchmark = False
 import torch.nn as nn
 import torch.nn.parallel
 import torch.backends.cudnn as cudnn
@@ -23,7 +29,7 @@ dd = pdb.set_trace
 parser = argparse.ArgumentParser()
 
 parser.add_argument("-d", "--data_list", type=str, default="./list.txt")
-parser.add_argument("-ns", "--nsnapshot", type=int, default=700)
+parser.add_argument("-ns", "--nsnapshot", type=int, default=200)
 parser.add_argument("-b", "--batch_size", type=int, default=15) # 16
 parser.add_argument("-lr", "--learning_rate", type=float, default=1e-4)
 parser.add_argument("-m" , "--momentum", type=float, default=0.) # 0.5

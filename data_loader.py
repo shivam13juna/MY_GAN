@@ -169,9 +169,9 @@ class ImageList(data.Dataset):
         view1 = int(token[1])
         
         img1 = read_img( img1_fpath )
-        print(img1_path)
-        print(img1_fpath)
-        print(view1)
+        # print(img1_path)
+        # print(img1_fpath)
+        # print(view1)
 
         if img1_fpath.find('multi_PIE') > -1:
             view2, img2, view3, img3 = get_multiPIE_img(img1_fpath)
